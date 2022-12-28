@@ -1,0 +1,16 @@
+{
+  "name": "gpt3",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "openai": "^3.1.0",
+    "redis": "^3.1.2",
+    "xpress": "^2.4.6"
+  }
+}
