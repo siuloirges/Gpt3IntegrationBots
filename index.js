@@ -43,7 +43,7 @@ app.listen(port, () => {
 
 
 //Routes
-app.get('/talk', async function (req, resp) {
+app.get('/talk-to-my-bot', async function (req, resp) {
     
     let chatID = req.query.chatID
     let userName = req.query.userName
