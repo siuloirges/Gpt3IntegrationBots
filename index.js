@@ -124,7 +124,7 @@ async function sendQuestion(question,bot){
         model: "text-davinci-003",
         prompt: question,
         temperature: 0.9,
-        max_tokens: 500,
+        max_tokens: 3000,
         top_p: 1,
         frequency_penalty: 0,
         presence_penalty: 0.6,
