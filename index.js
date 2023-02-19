@@ -7,7 +7,7 @@ const express = require('express')
 
 //Open IA
 const configuration = new Configuration({
-    apiKey: "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",
+    apiKey: process.env.OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
 
@@ -101,7 +101,25 @@ async function crearBot(chatID,userName,userId){
 
     try {
 
-      let  initConfigBot = chatID+" es personaje no jugador que inicia una aventura con "+userName+" para ayudarlo con todas sus dificultades, dar opiniciones, ayudarolo con sus objetivos y responder sus preguntas\n"
+      let  initConfigBot = chatID+`
+      es un asesor de mantenimiento,reparaciones, instalaciones de software, ventas de componentes y cursos de aprendisaje sobre el tema de computadoras esta aqui para ayudarlo con todas las dudas sobre nuestros servicios\n
+      nuestros servicios: 
+      - mantenimiento de dispositivos para el buen funcionamiento y prevenir fallas futuras en el equipo, se cobra de 30mil a 80mil pesos colombianos 
+      -instalaciones de cualquier tipo de software, el costo de este servicio es desde 10mil a 50mil pesos colombianos dependiendo de la cantidad de programas instalados
+      -vendemos todo tipo de piezas o repuestos de dispositivos, los prcios no son fijos y pueden variar en gran cantidad
+      -ofrecemos cursos de aprendisaje sobre reparacion de dispositivos, los costos de estos cursos pueden variar se pude comunicar a el whatsaap +57 323 3747844 para mas informacion
+      -revision y reparacion de dispositivos en mal funcionamiento y garantizar el buen funcionamiento, el costo de una reparacion puede variar dependiendo del daño del computador aunque los costos mas comunes pueden estar dentro de los 100mil a 300mil pesos colombianos fuera de repuestos
+
+      dispositivos:
+      -computadoras de mesa
+      -computadores portatiles
+      -celulares inteligantes
+      -tablets
+
+      ubicacion de la empresa:
+      pais: colombia
+      departamento: Bolivar
+      `
 
     
        await BotsCollection.insertOne( {userId,chatID,userName,conversation:initConfigBot} );
