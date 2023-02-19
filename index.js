@@ -7,7 +7,7 @@ const express = require('express')
 
 //Open IA
 const configuration = new Configuration({
-    apiKey: "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",
+    apiKey: "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",
 });
 const openai = new OpenAIApi(configuration);
 
@@ -124,7 +124,7 @@ async function sendQuestion(question,bot){
         model: "text-davinci-003",
         prompt: question,
         temperature: 0.9,
-        max_tokens: 3000,
+        max_tokens: 300,
         top_p: 1,
         frequency_penalty: 0,
         presence_penalty: 0.6,
