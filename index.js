@@ -5,28 +5,49 @@ const readline = require('readline');
 var redis = require("redis");
 const express = require('express')
 
-//Open IA
-const configuration = new Configuration({
-    apiKey: "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",
-});
-const openai = new OpenAIApi(configuration);
 
 
 //Mongo DB
 const uriMongo = "mongodb+srv://Sergio-All:OwSA0rjmhJKtyE7M@cluster0.ztbdwxd.mongodb.net/?retryWrites=true&w=majority";
 const Mongoclient = new MongoClient(uriMongo, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 var BotsCollection = null
-Mongoclient.connect( async err => {
 
-    console.log("Mongo Conectado a Bots Coleccion")
-    BotsCollection = Mongoclient.db("Chess").collection("Bots");
- 
-
-})
 
 //Redis
 var Redisclient = redis.createClient(16287, "redis-16287.c273.us-east-1-2.ec2.cloud.redislabs.com",{no_ready_check: true}); 
 Redisclient.auth("TUcO14tQPC6w0t2GQeYVyaQELsEI0TPW", function (err) { if (err) throw err; }); 
+var openai = null;
+Mongoclient.connect( async err => {
+
+    console.log("Mongo Conectado a Bots Coleccion")
+    BotsCollection = Mongoclient.db("Chess").collection("Bots");
+
+    //Open IA
+    Redisclient.get("apikey-openai", async function(err, reply) {
+
+    console.log(reply)
+    const configuration = new Configuration({
+        apiKey:reply,
+    });
+    openai = new OpenAIApi(configuration);
+
+    app.listen(port, () => {
+        console.log(`Runing port ${port}`)
+    })
+
+})
+
+ 
+
+})
+
+
+
+
+
+
+
+
 
 //Express
 const port = process.env.PORT || 5000
@@ -37,9 +58,8 @@ app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
-app.listen(port, () => {
-    console.log(`Runing port ${port}`)
-})
+
+
 
 
 //Routes
