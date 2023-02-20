@@ -7,7 +7,7 @@ const express = require('express')
 
 //Open IA
 const configuration = new Configuration({
-    apiKey: process.env.OPENAI_API_KEY,
+    apiKey: "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",
 });
 const openai = new OpenAIApi(configuration);
 
@@ -25,8 +25,8 @@ Mongoclient.connect( async err => {
 })
 
 //Redis
-var Redisclient = redis.createClient(12984, "redis-12984.c89.us-east-1-3.ec2.cloud.redislabs.com",{no_ready_check: true}); 
-Redisclient.auth("hpm9Coi0cvZ6a9eWxkldvjXxxftFHMHd", function (err) { if (err) throw err; }); 
+var Redisclient = redis.createClient(16287, "redis-16287.c273.us-east-1-2.ec2.cloud.redislabs.com",{no_ready_check: true}); 
+Redisclient.auth("TUcO14tQPC6w0t2GQeYVyaQELsEI0TPW", function (err) { if (err) throw err; }); 
 
 //Express
 const port = process.env.PORT || 5000
@@ -51,6 +51,9 @@ app.get('/talk-to-my-bot', async function (req, resp) {
     
     await sendMessage(chatID,userName,message,resp);
  
+    // ptin("ya")
+
+    return;
 })
   
 
@@ -58,18 +61,25 @@ app.get('/talk-to-my-bot', async function (req, resp) {
 async function sendMessage(chatID,userName,message,resp){
 
     let userId = "sergio-admin"
-    const bot = await buscarBot(chatID)
+    let bot = await buscarBot(chatID)
     
     if(bot == null){
+
         console.log("Nuevo")
-        await crearBot(chatID,userName,userId)
-        return sendMessage(chatID,userName,message,resp)
+        await crearBot(chatID,userName,userId,message,resp)
+       
+     
+    }else{
+
+        let response = await addMessage(userId,chatID,userName,message,bot)
+
+
+        resp.send(response)
+    
+        return;
+
     }
 
-    let response = await addMessage(userId,chatID,userName,message,bot)
-
-
-    resp.send(response)
 
 }
 
@@ -97,34 +107,29 @@ async function updateConversacionBot(conversation,bot){
     )
 }
 
-async function crearBot(chatID,userName,userId){
+async function crearBot(chatID,userName,userId,message,resp){
 
     try {
 
-      let  initConfigBot = chatID+`
-      es un asesor de mantenimiento,reparaciones, instalaciones de software, ventas de componentes y cursos de aprendisaje sobre el tema de computadoras esta aqui para ayudarlo con todas las dudas sobre nuestros servicios\n
-      nuestros servicios: 
-      - mantenimiento de dispositivos para el buen funcionamiento y prevenir fallas futuras en el equipo, se cobra de 30mil a 80mil pesos colombianos 
-      - instalaciones de cualquier tipo de software, el costo de este servicio es desde 10mil a 50mil pesos colombianos dependiendo de la cantidad de programas instalados
-      - vendemos todo tipo de piezas o repuestos de dispositivos, los prcios no son fijos y pueden variar en gran cantidad
-      - ofrecemos cursos de aprendisaje sobre reparacion de dispositivos, los costos de estos cursos pueden variar se pude comunicar a el whatsaap +57 323 3747844 para mas informacion
-      - revision y reparacion de dispositivos en mal funcionamiento y garantizar el buen funcionamiento, el costo de una reparacion puede variar dependiendo del daño del computador aunque los costos mas comunes pueden estar dentro de los 100mil a 300mil pesos colombianos fuera de repuestos
+        await Redisclient.get("chatInitConfig", async function(err, reply) {
 
-      dispositivos:
-      -computadoras de mesa
-      -computadores portatiles
-      -celulares inteligantes
-      -tablets
+            let  initConfigBot = chatID+reply
+          
 
-      ubicacion de la empresa: 
-      pais: Colombia
-      departamento: Bolivar
-      `
+            console.log("crearBot en mongo...")
+           await BotsCollection.insertOne({userId,chatID,userName,conversation:initConfigBot},async (err,data)=>{
+                console.log("insertado")
 
-    
-       await BotsCollection.insertOne( {userId,chatID,userName,conversation:initConfigBot} );
+                let bot = await buscarBot(chatID)
+                let response = await addMessage(userId,chatID,userName,message,bot)
+                resp.send(response)
+                return true;
+            })
+            
 
-        return true;
+        });
+
+        console.log("termino")
     
       } catch (error) {
     
